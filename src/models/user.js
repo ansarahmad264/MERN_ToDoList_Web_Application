@@ -1,5 +1,5 @@
 import { Timestamp } from 'bson';
-import mongoose, {schema} from 'mongoose';
+import mongoose, {Schema} from 'mongoose';
 import bcryptjs from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -11,6 +11,12 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
     },
+    fullName:{
+      type: String,
+      required: true,
+      trim: true, 
+      index: true
+    },
     email: {
       type: String,
       required: true,
@@ -19,8 +25,11 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       required: true,
-      type: string,
+      type: String,
     },
+    refreshToken: {
+      type: String
+    }
   },
   { timestamps: true }
 );
