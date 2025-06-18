@@ -9,4 +9,10 @@ app.use(cors ({
     credentials: true
 }))
 
+// import routes
+import { router as userRouter } from "./routes/user.routes.js";
+
+//declare routes
+app.use("/api/v1/user", userRouter)
+
 export { app }
