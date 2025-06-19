@@ -1,6 +1,6 @@
 
 import { User } from "../models/user.js"
-const registerUser = async(reg,res) => {
+const registerUser = async(req,res) => {
     //get user details from frontend
     //validate user details - not empty
     //check if user already exist
@@ -23,7 +23,7 @@ const registerUser = async(reg,res) => {
         console.log("All fields are required")
     }
 
-    const existingUser = User.findOne({
+    const existingUser = await User.findOne({
         $or: [{email}, {username}]
     })
 
@@ -31,20 +31,20 @@ const registerUser = async(reg,res) => {
         console.log("user with username or email already exist");
     }
 
-    const user = User.create({
+    const user = await User.create({
         username: username.toLowerCase(),
         fullName,
         email,
         password
     })
 
-    const createdUser = User.findById(user._id).select("-password -refreshToken")
+    const createdUser = await User.findById(user._id).select("-password -refreshToken")
 
     if(!createdUser){
         console.error("server was unable to store the user", 500)
     }
 
-    return res.stats(200).json({
+    return res.status(200).json({
         message: "User Registered Successfully"
     })
 
