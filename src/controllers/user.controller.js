@@ -50,4 +50,97 @@ const registerUser = async(req,res) => {
 
 }
 
-export {registerUser}
+const generateAccessAndRefreshToken = async(userId) =>{
+    try {
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({validateBeforeSave: false})
+
+        return { accessToken, refreshToken}
+        
+    } catch (error) {
+        console.log("500 - something went wrong while generating Access and Refresh token")
+    }
+}
+
+const loginUser = async(req, res) => {
+    //req body <- data
+    //username or email
+    //find user
+    //password
+    //access and refresh token
+    //send cookie
+
+    const {email, password} = req.body
+
+    if(!email|| !password){
+        console.log("401 - username and password must not be empty")
+    }
+
+    const user = await User.findOne(email)
+
+    if(!user){
+        console.log("404 - This user doesnot exist")
+    }
+
+    const passwordValidation = await user.isPasswordCorrect(password)
+    if(!passwordValidation){
+        console.log(404 - "Invalid user Credentials")
+    }
+
+    const {refreshToken, accessToken} = generateAccessAndRefreshToken(user._id)
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res.status(200)
+    .cookies("accessToken", accessToken, options)
+    .cookies("refreshToken", refreshToken, options)
+    .json(
+        200,
+        {
+            user: loggedInUser, accessToken, refreshToken
+        },
+        "User Logged in Successfully"
+    )
+
+}
+
+const logoutUser = async(reg,res) => {
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: undefined
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure:true
+    }
+
+    return res.status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken",options)
+    .json(
+        message = "User Logged out Successfully"
+    )
+}
+
+export {
+    registerUser,
+    loginUser,
+    logoutUser
+}
