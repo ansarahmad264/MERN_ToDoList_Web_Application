@@ -1,12 +1,12 @@
-import { jwt } from "jsonwebtoken"
+import jwt from "jsonwebtoken"
 import { User } from "../models/user.js"
 
 export const verifyJWT = async(req,res,next) => {
     try {
-        const token = req.cookie?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
-    
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+
         if(!token){
-            console.log("401 - Unathurized Request")
+            return res.status(401).json({ message: "Unauthorized - No token provided" });
         }
     
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
@@ -14,7 +14,7 @@ export const verifyJWT = async(req,res,next) => {
         const user = await User.findById(decodedToken._id)
     
         if(!user){
-            console.log("401 - Invalid Access Token")
+            return res.status(401).json({ message: "Unauthorized - User not found" });
         }
     
         req.user = user

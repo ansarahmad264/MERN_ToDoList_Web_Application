@@ -57,6 +57,7 @@ const generateAccessAndRefreshToken = async(userId) =>{
         const refreshToken = user.generateRefreshToken()
 
         user.refreshToken = refreshToken
+
         await user.save({validateBeforeSave: false})
 
         return { accessToken, refreshToken}
@@ -76,11 +77,11 @@ const loginUser = async(req, res) => {
 
     const {email, password} = req.body
 
-    if(!email|| !password){
-        console.log("401 - username and password must not be empty")
+    if(!email){
+        console.log("401 - username must not be empty")
     }
 
-    const user = await User.findOne(email)
+    const user = await User.findOne({email})
 
     if(!user){
         console.log("404 - This user doesnot exist")
@@ -91,7 +92,8 @@ const loginUser = async(req, res) => {
         console.log(404 - "Invalid user Credentials")
     }
 
-    const {refreshToken, accessToken} = generateAccessAndRefreshToken(user._id)
+
+    const { accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
@@ -101,19 +103,21 @@ const loginUser = async(req, res) => {
     }
 
     return res.status(200)
-    .cookies("accessToken", accessToken, options)
-    .cookies("refreshToken", refreshToken, options)
-    .json(
-        200,
-        {
-            user: loggedInUser, accessToken, refreshToken
-        },
-        "User Logged in Successfully"
-    )
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json({
+        statusCode: 200,
+        message: "User Logged in Successfully",
+        data: {
+          user: loggedInUser,
+          accessToken,
+          refreshToken
+        }
+      })
 
 }
 
-const logoutUser = async(reg,res) => {
+const logoutUser = async(req,res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -134,9 +138,9 @@ const logoutUser = async(reg,res) => {
     return res.status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken",options)
-    .json(
-        message = "User Logged out Successfully"
-    )
+    .json({
+        message : "User Logged out Successfully"
+    })
 }
 
 export {
