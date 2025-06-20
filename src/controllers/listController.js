@@ -56,4 +56,27 @@ const updateListTitle = async(req,res) =>{
 
 }
 
-export {createList,updateListTitle}
+const displayAllList = async(req,res) =>{
+
+    const userLists = await List.find({CreatedBy:req.user._id})
+                                .select("-_id -createdAt -updatedAt -__v") 
+                                .populate("CreatedBy", "fullName -_id");
+
+    if(!userLists){
+        return res
+        .status(404)
+        .json({
+            statusCode: 200,
+            message: "No List Found"
+        })
+    }
+
+    return res.status(200)
+    .json({
+        statusCode: 200,
+        message: "List Loaded Successfully",
+        data: userLists
+      })
+}
+
+export {createList,updateListTitle,displayAllList}
