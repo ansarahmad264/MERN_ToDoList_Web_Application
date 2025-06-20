@@ -5,11 +5,6 @@ const listSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    creationDate: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
     CreatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
