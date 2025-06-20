@@ -181,9 +181,66 @@ const refreshAccessToken = async(req,res) =>{
     )
 }
 
+const changeCurrentPassword = async(req,res) => {
+    const {newPassword, oldPasword} = req.body
+
+    const user = await User.findById(req.user._id)
+    
+    const isPasswordCorrect = user.isPasswordCorrect(oldpassword)
+
+    if(!isPasswordCorrect) {
+        console.log("400 - Invalid Old Password")
+    }
+
+    user.password = newPassword
+    user.save({validateBeforeSave: false})
+
+    return res
+    .status(200)
+    .json(
+        200,
+        {},
+        "Password Has been Changed Successfully"
+    )
+
+    
+}
+
+const updateUserAccountDetails = async(req,res) => {
+    const {fullName, email} = req.body
+
+    if(!email || !fullName){
+        console.log("400 - All fields are required")
+    }
+
+    const user = User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                fullName,
+                email
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(200, user, "User Account Details has been Updated Successfully")
+}
+
+const getCurrentUser = async(req,res) => {
+    return res.json(200, req.user, "Current User fetched Successfully")
+}
+
 export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    changeCurrentPassword,
+    updateUserAccountDetails,
+    getCurrentUser
 }
