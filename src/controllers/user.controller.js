@@ -1,4 +1,5 @@
 
+import Jwt from "jsonwebtoken"
 import { User } from "../models/user.js"
 const registerUser = async(req,res) => {
     //get user details from frontend
@@ -143,8 +144,46 @@ const logoutUser = async(req,res) => {
     })
 }
 
+const refreshAccessToken = async(req,res) =>{
+    const incommingRefreshToken = req.cookies?.accessToken || req.body.accessToken
+
+    if(!incommingRefreshToken){
+        console.log("401 - Unathurized Request")
+    }
+
+    const decodedToken = jwt.verify(incommingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
+
+    const user = await User.findById(decodedToken._id)
+
+    if(!user){
+        console.log("401 - Invalid Refresh Token")
+    }
+
+    if(incommingRefreshToken !== user?.refreshToken){
+        console.log("401 - Refresh Token Expired or Used")
+    }
+
+    options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    const {accessToken, newRefreshToken} = await generateAccessAndRefreshToken(user._id)
+
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", newRefreshToken, options)
+    .json(
+        200,
+        {accessToken, refreshToken: newRefreshToken},
+        "Access Token Refreshed"
+    )
+}
+
 export {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
 }
