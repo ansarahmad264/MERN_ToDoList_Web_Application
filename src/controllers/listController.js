@@ -22,4 +22,38 @@ const createList = async(req,res) =>{
     .json(200, list, "List Has been Created Successfully")
 }
 
-export {createList}
+const updateListTitle = async(req,res) =>{
+    const {title} = req.body
+    const{listId} = req.params
+
+    if(!title){
+        return res.status(400, "title cannot be empty")
+    }
+
+    
+    const updatedList = await List.findByIdAndUpdate(
+        listId,
+        {
+            $set:{
+                title
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    if (!updatedList) {
+        return res.status(404).json({ message: "List not found or unauthorized" });
+      }
+
+    return res.status(200)
+    .json({
+        statusCode: 200,
+        message: "List Updated Successfully",
+        data: updatedList
+      })
+
+}
+
+export {createList,updateListTitle}
