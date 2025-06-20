@@ -79,4 +79,20 @@ const displayAllList = async(req,res) =>{
       })
 }
 
-export {createList,updateListTitle,displayAllList}
+const deleteList = async(req,res) => {
+    const{listId} = req.params
+
+    
+    const deletedList = await List.findByIdAndDelete(listId);
+
+    if (!deletedList) {
+    return res.status(404).json({ message: "List not found" });
+    }
+
+    return res.status(200).json({
+    message: "List deleted successfully",
+    data: deletedList
+    });
+}
+
+export {createList,updateListTitle,displayAllList,deleteList}
