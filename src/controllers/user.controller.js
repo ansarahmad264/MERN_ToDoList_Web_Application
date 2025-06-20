@@ -89,8 +89,9 @@ const loginUser = async(req, res) => {
     }
 
     const passwordValidation = await user.isPasswordCorrect(password)
+    console.log("password validation", passwordValidation);
     if(!passwordValidation){
-        console.log(404 - "Invalid user Credentials")
+        return res.status(401).json({ message: "Invalid user credentials" });
     }
 
 
@@ -186,7 +187,7 @@ const changeCurrentPassword = async(req,res) => {
 
     const user = await User.findById(req.user._id)
     
-    const isPasswordCorrect = user.isPasswordCorrect(oldpassword)
+    const isPasswordCorrect = user.isPasswordCorrect(oldPasword)
 
     if(!isPasswordCorrect) {
         console.log("400 - Invalid Old Password")
@@ -213,7 +214,7 @@ const updateUserAccountDetails = async(req,res) => {
         console.log("400 - All fields are required")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user._id,
         {
             $set: {
