@@ -73,4 +73,22 @@ const updateTask = async (req, res) => {
     }
 }
 
-export {createTask, updateTask}
+const deleteTask = async(req,res) =>{
+    const{taskId} = req.params
+
+    const deletedTask = await Task.findByIdAndDelete(taskId)
+
+    if(!deletedTask){
+        return res.json({status: 500,message:"Could Not Delete Task"})
+    }
+
+    return res.json({
+        status:"200",
+        message:"Task has Been Deleted Successfully",
+        data: deletedTask
+    })
+
+}
+  
+
+export {createTask, updateTask, deleteTask}
