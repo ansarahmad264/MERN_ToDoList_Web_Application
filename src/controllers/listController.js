@@ -5,7 +5,7 @@ const createList = async(req,res) =>{
     const {title} = req.body
 
     if(!title){
-        console.log("Title Field is Required")
+        return res.json({status:"400",message:"Title Field is Required"})
     }
 
     const list = await List.create({
@@ -15,7 +15,7 @@ const createList = async(req,res) =>{
 
     const createdList = await List.findById(list._id)
     if(!createdList){
-        console.log("500 - Server was unable to create List")
+        return res.json({status:"500", message:"Server was unable to create List"})
     }
 
     return res.status(200)
@@ -27,7 +27,7 @@ const updateListTitle = async(req,res) =>{
     const{listId} = req.params
 
     if(!title){
-        return res.status(400, "title cannot be empty")
+        return res.json({status: "400", message: "Title cannot be empty"})
     }
 
     
@@ -44,7 +44,7 @@ const updateListTitle = async(req,res) =>{
     )
 
     if (!updatedList) {
-        return res.status(404).json({ message: "List not found or unauthorized" });
+        return res.status(500).json({ message: "Could not Update List" });
       }
 
     return res.status(200)

@@ -21,7 +21,7 @@ const registerUser = async(req,res) => {
             fields?.trim() == ""
         })
     ){
-        console.log("All fields are required")
+        return res.json({status: "400", message: "All Fields are Required"})
     }
 
     const existingUser = await User.findOne({
@@ -29,7 +29,7 @@ const registerUser = async(req,res) => {
     })
 
     if(existingUser){
-        console.log("user with username or email already exist");
+        return res.json({message: "user with username or email already exist"})
     }
 
     const user = await User.create({
@@ -42,7 +42,7 @@ const registerUser = async(req,res) => {
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
 
     if(!createdUser){
-        console.error("server was unable to store the user", 500)
+        return res.json({status: "500", message: "server was unable to store the user"})
     }
 
     return res.status(200).json({
@@ -79,13 +79,13 @@ const loginUser = async(req, res) => {
     const {email, password} = req.body
 
     if(!email){
-        console.log("401 - username must not be empty")
+        return res.json({status: "400", message: "username must not be empty"})
     }
 
     const user = await User.findOne({email})
 
     if(!user){
-        console.log("404 - This user doesnot exist")
+        return res.json({status: "404", message: "This user doesnot exist"})
     }
 
     const passwordValidation = await user.isPasswordCorrect(password)
@@ -190,7 +190,7 @@ const changeCurrentPassword = async(req,res) => {
     const isPasswordCorrect = user.isPasswordCorrect(oldPasword)
 
     if(!isPasswordCorrect) {
-        console.log("400 - Invalid Old Password")
+        return res.json({status:"400", message: "Invalid Old Password"})
     }
 
     user.password = newPassword
@@ -211,7 +211,7 @@ const updateUserAccountDetails = async(req,res) => {
     const {fullName, email} = req.body
 
     if(!email || !fullName){
-        console.log("400 - All fields are required")
+        return res.json({status: "400", message: "All fields are required"})
     }
 
     const user = await User.findByIdAndUpdate(
