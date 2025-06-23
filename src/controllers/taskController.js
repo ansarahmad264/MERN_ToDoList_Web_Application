@@ -89,6 +89,19 @@ const deleteTask = async(req,res) =>{
     })
 
 }
+
+const getAllTasks = async(req, res) => {
+    const {listId} = req.params
+
+    const tasks = await Task.find({AssociatedWith: listId}).select("-_id -createdAt -updatedAt -__v")
+                                                    .populate("AssociatedWith", "title -_id")
+
+    if(!tasks){
+        return res.json({status:"400",message:"no tasks found for this List"})
+    }
+
+    return res.json({status:"200",message:"Tasks Has Been Loaded Successfully",data: tasks})
+}
   
 
-export {createTask, updateTask, deleteTask}
+export {createTask, updateTask, deleteTask, getAllTasks}
