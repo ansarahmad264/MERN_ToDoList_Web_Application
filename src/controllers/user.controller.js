@@ -198,11 +198,7 @@ const changeCurrentPassword = async(req,res) => {
 
     return res
     .status(200)
-    .json(
-        200,
-        {},
-        "Password Has been Changed Successfully"
-    )
+    .json({status: "200", message: "Password Has been Changed Successfully"}    )
 
     
 }
@@ -229,7 +225,7 @@ const updateUserAccountDetails = async(req,res) => {
 
     return res
     .status(200)
-    .json(200, user, "User Account Details has been Updated Successfully")
+    .json({status:"200", data: user, message:"User Account Details has been Updated Successfully"})
 }
 
 const getCurrentUser = async(req,res) => {

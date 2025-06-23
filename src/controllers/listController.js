@@ -19,7 +19,7 @@ const createList = async(req,res) =>{
     }
 
     return res.status(200)
-    .json(200, list, "List Has been Created Successfully")
+    .json({status: "200", message: "List Has been Created Successfully", data:list })
 }
 
 const updateListTitle = async(req,res) =>{

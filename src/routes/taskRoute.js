@@ -6,7 +6,7 @@ const taskRouter = Router()
 
 //secured Routes
 taskRouter.route("/create-task/:listId").post(verifyJWT ,createTask)
-taskRouter.route("/update-task/:taskId").post(verifyJWT, updateTask)
+taskRouter.route("/update-task/:taskId").patch(verifyJWT, updateTask)
 taskRouter.route("/delete-task/:taskId").delete(verifyJWT, deleteTask)
 taskRouter.route("/get-tasks/:listId").get(verifyJWT, getAllTasks)
 

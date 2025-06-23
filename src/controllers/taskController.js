@@ -97,7 +97,7 @@ const getAllTasks = async(req, res) => {
                                                     .populate("AssociatedWith", "title -_id")
 
     if(!tasks){
-        return res.json({status:"400",message:"no tasks found for this List"})
+        return res.json({status:"400",message:"no tasks found"})
     }
 
     return res.json({status:"200",message:"Tasks Has Been Loaded Successfully",data: tasks})

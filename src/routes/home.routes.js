@@ -7,7 +7,7 @@ const homeRouter = Router();
 
 //secured Routes
 homeRouter.route("/create-list").post(verifyJWT, createList)
-homeRouter.route("/update-list/:listId").post(verifyJWT, updateListTitle)
+homeRouter.route("/update-list/:listId").patch(verifyJWT, updateListTitle)
 homeRouter.route("/user-lists").get(verifyJWT ,displayAllList)
 homeRouter.route("/delete-list/:listId").delete(verifyJWT, deleteList)
 
